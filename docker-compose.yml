@@ -1,0 +1,39 @@
+
+
+services:
+  nginx_web:
+    image: nginx:latest
+    container_name: nginx_web
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    ports:
+      - "8080:80"
+    networks:
+      - appnet
+
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: appuserpass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      appnet:
+        aliases:
+          - new_db
+          - dev_db
+
+networks:
+  appnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/28
+
+volumes:
+  db_data:
+
